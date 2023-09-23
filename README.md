@@ -1,6 +1,6 @@
 # Sign-Language-Detection-Model
 
-Welcome to the Sign Language Detection Model project! In a world where effective communication knows no boundaries, my project aims to bridge the gap between sign language and spoken language. This model is designed to empower individuals who use sign language as their primary means of communication by providing real-time detection and interpretation of sign language gestures and actions.
+Welcome to the Sign Language Detection Model project! In a world where effective communication knows no boundaries, this project aims to bridge the gap between sign language and spoken language. This model is designed to empower individuals who use sign language as their primary means of communication by providing real-time detection and interpretation of sign language gestures and actions.
 
 In this project, I have harnessed the power of computer vision and machine learning to create a system that captures and analyzes real-time actions and signs performed by a person. By leveraging cutting-edge technology, we can convert these gestures into spoken or written words, making communication more accessible and inclusive for everyone.
 
