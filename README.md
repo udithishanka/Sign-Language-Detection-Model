@@ -6,7 +6,6 @@ In this project, I have harnessed the power of computer vision and machine learn
 
 What you can find here
 - Project code
-- Model Trained Data
 - Model Simulations
 - Model Stats
 - Technical Report
