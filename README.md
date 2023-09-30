@@ -102,6 +102,29 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
     cap.release()
     cv2.destroyAllWindows()
 ```
+In this section we import the holistic model from mediapipe to detect the key points and the drawing_utils for drawing the landmarks. 
+'mediapipe_detection' function takes two arguments: an input image and a MediaPipe model. The purpose of this function is to process the input image using the specified model and return the processed image along with the model's results. 
+The steps involved are: 
+- Converting the input image from BGR color format to RGB format (MediaPipe's expected format).
+- Temporarily setting the image's writeable flag to False to make it read-only for processing.
+- Using the model to process the image and make predictions.
+- Resetting the image's writeable flag to True.
+- Converting the image back to BGR color format.
+- Finally, returning the processed image and the model's results.
+
+draw_landmarks function takes an image and the results obtained from the MediaPipe model as input. Its purpose is to draw landmarks on the input image for the face, pose, left hand, and right hand. It utilizes the mp_drawing library to achieve this. 
+
+draw_styled_landmarks function is responsible for drawing landmarks on the input image, but it allows for custom styling of the landmarks. Specifically, it draws landmarks for the face, pose, left hand, and right hand. Each type of landmark is styled differently, with specified colors and line thicknesses to improve visualization. 
+
+Video Capture and Main Loop In this section, the code sets up video capture from the default camera (usually the webcam) using cv2.VideoCapture(0). 
+It then enters a main loop that continuously: 
+- Captures video frames from the camera feed using cap.read().
+- Calls the mediapipe_detection function to process each frame using the holistic model.
+- Prints the detected landmarks to the console.
+- Utilizes draw_styled_landmarks to draw the detected landmarks on the frame.
+- Displays the processed frame with overlaid landmarks using OpenCV.
+
+The final part of the code handles the exit mechanism. The main loop continues running until the user presses the 'q' key. When 'q' is pressed, the loop breaks, and the script releases the camera (cap.release()) and closes all OpenCV windows (cv2.destroyAllWindows()).
 
 ![fig2](https://github.com/udithishanka/Sign-Language-Detection-Model/assets/107479890/ac1134e0-40cd-4310-87e9-0ef30545758d)
 
@@ -125,6 +148,8 @@ def extract_keypoints(results):
     return np.concatenate([pose, face, lh, rh])
 
 ```
+
+This code segment extracts and organizes keypoint data from MediaPipe's holistic model results. It creates numpy arrays to store the 2D and 3D coordinates, along with visibility information, of keypoints related to pose, face, left hand, and right hand. The code iterates through each type of landmark, constructs arrays for each detected landmark, and appends them to their respective arrays. If certain landmarks are not detected, the code populates the corresponding arrays with zeros to maintain consistent data structures. Additionally, a function called extract_keypoints encapsulates this process, taking the results object as input and returning a concatenated array containing all the keypoints.
 
 ### Setup Folders for Collection
 
@@ -152,6 +177,9 @@ for action in actions:
             pass
 
 ```
+
+This code is responsible for setting up the directory structure to store exported data, specifically numpy arrays containing video sequences of actions to be detected. It begins by defining several parameters, including the path where the data will be exported (DATA_PATH), the list of actions to detect (such as 'hello,' 'thanks,' and 'iloveyou'), the number of video sequences to capture (no_sequences), and the length of each video sequence in terms of frames (sequence_length). 
+The code then enters a loop to create folders and subfolders for each action and its associated video sequences. It starts with the index specified by start_folder and iterates through the list of actions. For each action, it calculates the maximum directory index within that action's folder and increments it by the sequence number. This ensures that each new video sequence is stored in its own uniquely numbered subfolder within the corresponding action folder. Exception handling is used to ensure that the code doesn't raise errors if the folders already exist.
 
 ### Collect Keypoint Values for Training and Testing
 
@@ -205,6 +233,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
     cv2.destroyAllWindows()
 
 ```
+In this block of code, we collect the data for training and testing the model. 
 
 
 ### Preprocess Data and Create Labels and Features
@@ -251,6 +280,9 @@ model.fit(X_train, y_train, epochs=2000, callbacks=[tb_callback])
 model.summary()
 
 ```
+Now comes the good part. We train the deep learning model using TensorFlow and Keras to perform action recognition on video sequences. The architecture of the model consists of a sequential stack of layers. It starts with three Long Short-Term Memory (LSTM) layers with varying units (64, 128, and 64, respectively), all using the ReLU activation function. These LSTM layers are designed for sequence data, and return_sequences=True is set to ensure that they output sequences rather than a single value. The input shape is specified as (30, 1662), which corresponds to the length of each sequence (30 frames) and the number of features per frame (1662). 
+Following the LSTM layers, there are three fully connected (Dense) layers. The first Dense layer contains 64 units with ReLU activation, followed by a layer with 32 units and ReLU activation, and finally an output layer with a number of units equal to the number of distinct actions (as determined by actions.shape[0]) and softmax activation. This output layer produces probability scores for each action class, allowing the model to predict the most likely action for a given input sequence. 
+The model is compiled with the Adam optimizer and categorical cross-entropy loss, which is commonly used for multi-class classification problems. Additionally, the categorical accuracy metric is specified for monitoring the model's performance during training. The training process uses the fit method, where X_train and y_train are assumed to be the training data and labels, respectively. It trains for a specified number of epochs (2000 in this case) and utilizes a TensorBoard callback for logging training metrics to a specified directory (log_dir) for later visualization and analysis. After training, the model's architecture and summary are displayed below.
 
 ![modelsummary](https://github.com/udithishanka/Sign-Language-Detection-Model/assets/107479890/25b11a88-605b-46b4-b3ef-166bd20c99cb)
 
